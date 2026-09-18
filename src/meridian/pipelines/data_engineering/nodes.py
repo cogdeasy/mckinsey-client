@@ -336,7 +336,8 @@ def mirror_primary_to_csv(demand_primary):
 
 
 def build_data_quality_report(
-    sales_stacked, sales_cleaned, stores_cleaned, products_cleaned, demand_primary
+    sales_stacked, sales_cleaned, store_master, stores_cleaned, products_cleaned,
+    demand_primary, params,
 ):
     parts = [
         validation.summarise(sales_cleaned, "sales_cleaned"),
@@ -355,8 +356,14 @@ def build_data_quality_report(
     dropped["units"] = pd.to_numeric(dropped["units"], errors="coerce").fillna(0)
     by_week = dropped.groupby("week_label")
     negative_share = by_week["units"].apply(lambda units: float((units < 0).mean()))
+    known_stores = (
+        store_master.rename(columns=params["column_map"])["store_id"]
+        .astype(str)
+        .str.strip()
+        .str.zfill(4)
+    )
     unmapped = (
-        (~dropped["store_id"].isin(stores_cleaned["store_id"]))
+        (~dropped["store_id"].isin(known_stores))
         .groupby(dropped["week_label"])
         .sum()
     )
