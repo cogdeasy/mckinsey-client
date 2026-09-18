@@ -1,0 +1,96 @@
+version: 2
+
+models:
+  - name: mart_sales_weekly
+    description: "{{ doc('nfk_mart_sales_weekly') }}"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - store_id
+            - sku_id
+            - week_label
+    columns:
+      - name: store_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_nfk__stores')
+              field: store_id
+      - name: sku_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_nfk__articles')
+              field: sku_id
+      - name: week_label
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_nfk__fiscal_calendar')
+              field: week_label
+      - name: net_value_dkk
+        description: Net of 25% VAT and container deposit.
+        tests:
+          - not_null
+      - name: discount_depth
+        description: 1 - promo price / normal price. Zero when not on offer.
+        tests:
+          - not_null
+      - name: promo_flag
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      - name: fiscal_period
+        tests:
+          - not_null
+
+  - name: mart_store_week_traffic
+    description: Store x week traffic, basket and sales density.
+    columns:
+      - name: store_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_nfk__stores')
+              field: store_id
+      - name: store_size_band
+        tests:
+          - accepted_values:
+              values: ['S', 'M', 'L']
+
+  - name: mart_promo_performance
+    description: Campaign uplift against a four week pre period baseline.
+    columns:
+      - name: sku_id
+        tests:
+          - not_null
+      - name: discount_depth
+        tests:
+          - not_null
+
+  - name: mart_price_elasticity_input
+    description: Log log frame for the elasticity fit.
+    columns:
+      - name: log_price
+        tests:
+          - not_null:
+              config:
+                where: "units > 0"
+
+  - name: mart_category_week
+    description: Category x region x week reporting aggregate.
+
+  - name: mart_data_quality
+    description: Long format data quality counters, one row per week per check.
+    columns:
+      - name: check_name
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - raw_rows
+                - negative_unit_lines
+                - zero_value_lines
+                - unmapped_store_lines
+                - in_scope_rows
+                - net_value_dkk

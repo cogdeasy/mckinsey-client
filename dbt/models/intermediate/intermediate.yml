@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: int_sales_normalised
+    description: >
+      Sales with VAT and container deposit stripped, out of scope stores and
+      internal categories removed, returns netted into the sale week.
+    columns:
+      - name: store_id
+        tests:
+          - not_null
+      - name: net_value_dkk
+        tests:
+          - not_null
+
+  - name: int_promo_weeks
+    description: Campaigns exploded to article x week x store group.
+    columns:
+      - name: discount_depth
+        tests:
+          - not_null
+
+  - name: int_price_weekly
+    description: Effective dated prices flattened onto the week grid.
+
+  - name: int_store_week
+    description: Store x week traffic joined to the store master.
+
+  - name: int_stock_weekly
+    description: Stock samples with a three week carry forward of the out of stock flag.

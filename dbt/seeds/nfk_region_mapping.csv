@@ -1,0 +1,8 @@
+region_code,region_name,region_group,country_code,manager_initials
+11,Hovedstaden,STORBY,DK,MKN
+31,Fyn,OERNE,DK,TBH
+42,Midtjylland,STORBY,DK,PEJ
+55,Syddanmark,JYLLAND,DK,PEJ
+62,Nordjylland,JYLLAND,DK,PEJ
+70,Sjaelland Vest,OERNE,DK,TBH
+99,Depot,DEPOT,DK,

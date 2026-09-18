@@ -1,0 +1,149 @@
+# Local overrides used when running the asset off the sample extract that
+# ships with the repo (data/01_raw). Keeps the run under a minute on a laptop.
+#
+# The config loader replaces whole top level keys rather than merging them, so
+# every block below has to repeat the settings it does not change. Keep this
+# file in step with conf/base/parameters*.yml when those change.
+
+scope:
+  excluded_category_codes: ["99", "98"]
+  excluded_store_formats: ["FRANCHISE", "PARTNER"]
+  min_weeks_of_history: 8
+  min_units_per_week: 1
+
+feature_engineering:
+  target_column: units
+
+  lags: [1, 2, 3, 4]
+  rolling_windows: [4]
+  rolling_stats: ["mean", "std"]
+
+  promo_mechanics:
+    AVIS: leaflet
+    TILBUD: price_cut
+    "3F2": multibuy
+    MP: loyalty
+    KUPON: coupon
+  promo_lead_weeks: 1
+  promo_lag_weeks: 1
+
+  holiday_features:
+    - paaske
+    - store_bededag
+    - kristi_himmelfart
+    - pinse
+    - grundlovsdag
+    - jul
+    - nytaar
+  christmas_build_up_weeks: [49, 50, 51]
+  summer_holiday_weeks: [29, 30, 31]
+
+  price:
+    base_price_window_weeks: 8
+    discount_depth_buckets: [0.0, 0.05, 0.1, 0.2, 0.35, 1.0]
+    log_transform: true
+
+  categorical_encoding: target_mean
+  target_encoding_smoothing: 20
+  drop_first_n_weeks: 8
+
+model_training:
+  test_horizon_weeks: 4
+  validation_horizon_weeks: 4
+
+  target_column: units
+  log_target: true
+
+  estimator: sklearn.ensemble.GradientBoostingRegressor
+  estimator_params:
+    n_estimators: 80
+    learning_rate: 0.08
+    max_depth: 3
+    min_samples_leaf: 10
+    subsample: 1.0
+    loss: ls
+    random_state: 20211129
+
+  sample_weighting:
+    recency_half_life_weeks: 26
+    promo_week_multiplier: 1.4
+
+  elasticity:
+    method: ols_log_log
+    min_observations: 30
+    fallback_level: category_code
+    winsorise_discount_at: 0.6
+
+  feature_blocklist:
+    - source_key
+    - sku_description
+    - opened_on
+
+model_evaluation:
+  metrics: ["wape", "mape", "bias", "rmse"]
+  mape_min_actual_units: 5
+
+  segments:
+    - region_code
+    - category_code
+    - store_format
+    - promo_flag
+
+  backtest:
+    folds: 2
+    fold_horizon_weeks: 4
+    step_weeks: 4
+
+  acceptance_thresholds:
+    wape_overall: 0.28
+    wape_fresh: 0.35
+    bias_abs: 0.05
+
+  fresh_category_codes: ["10", "11", "12"]
+  report_top_n_features: 25
+
+scoring:
+  horizon_weeks: 4
+  anchor_week: null
+  round_to_case_pack: true
+  default_case_pack: 6
+
+  manual_uplifts:
+    - category_code: "10"
+      region_code: "11"
+      factor: 1.08
+      note: "Copenhagen fresh uplift, agreed with client on 12/03"
+    - category_code: "30"
+      region_code: "42"
+      factor: 0.94
+      note: "Aarhus ambient over-forecast, wave-1 carry over"
+    - category_code: "20"
+      region_code: null
+      factor: 1.02
+
+  scenarios:
+    baseline:
+      price_change_pct: 0.0
+      promo_intensity: 1.0
+    price_up_3:
+      price_change_pct: 0.03
+      promo_intensity: 1.0
+    promo_heavy:
+      price_change_pct: 0.0
+      promo_intensity: 1.25
+    inflation_squeeze:
+      price_change_pct: 0.07
+      promo_intensity: 0.85
+
+  export:
+    columns:
+      - BUTIK_ID
+      - VARE_NR
+      - UGE
+      - PROGNOSE_ANTAL
+      - PROGNOSE_VAERDI_DKK
+      - MODEL_VERSION
+    model_version: "meridian-2.4.1"
+    decimal_separator: ","
+    field_separator: ";"
+    date_format: "%d/%m/%Y"

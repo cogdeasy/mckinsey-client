@@ -1,0 +1,48 @@
+version: 2
+
+seeds:
+  - name: nfk_region_mapping
+    description: >
+      Region code to region name. The codes are the old amt numbers that
+      Nordfalk still use as the first two digits of the store number.
+    columns:
+      - name: region_code
+        tests:
+          - unique
+          - not_null
+      - name: region_group
+        tests:
+          - accepted_values:
+              values: ['STORBY', 'OERNE', 'JYLLAND', 'DEPOT']
+
+  - name: nfk_category_mapping
+    description: Two digit category code to name and fresh flag.
+    columns:
+      - name: category_code
+        tests:
+          - unique
+          - not_null
+
+  - name: nfk_promo_mechanics
+    description: Promo mechanics with the uplift the client plans against.
+    columns:
+      - name: promo_mechanic
+        tests:
+          - unique
+          - not_null
+
+  - name: nfk_deposit_classes
+    description: Container deposit classes and their DKK amounts.
+    columns:
+      - name: deposit_type
+        tests:
+          - unique
+          - not_null
+
+  - name: nfk_store_format_scope
+    description: Which store formats are in engagement scope.
+    columns:
+      - name: store_format
+        tests:
+          - unique
+          - not_null

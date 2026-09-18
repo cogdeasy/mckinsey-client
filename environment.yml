@@ -1,0 +1,25 @@
+# Engagement environment. Build with:
+#   conda env create -f environment.yml
+#   conda activate meridian-nfk
+#
+# NOTE (SB, sprint 14): the internal channel below is only reachable from the
+# engagement VPN. If you are on the client laptop image use the mirror in
+# docs/onboarding/environment-setup.md instead.
+name: meridian-nfk
+channels:
+  - https://artifacts.internal/analytics-prod/conda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8.10
+  - pip=21.1.1
+  - pandas=1.1.5
+  - numpy=1.19.5
+  - scipy=1.5.4
+  - scikit-learn=0.24.2
+  - pyarrow=3.0.0
+  - psycopg2=2.8.6
+  - jupyter=1.0.0
+  - nodejs=14
+  - pip:
+      - -r requirements-dev.txt

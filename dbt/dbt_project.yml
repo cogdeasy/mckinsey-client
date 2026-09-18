@@ -1,0 +1,53 @@
+name: 'nfk_analytics'
+version: '1.3.0'
+config-version: 2
+
+profile: 'nfk_analytics'
+
+source-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+data-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_modules"
+
+vars:
+  # Nordfalk specifics used across the models. The VAT rate and the deposit
+  # classes also exist in the Kedro parameters; they are kept in both places
+  # because the warehouse models run without the asset.
+  vat_rate: 0.25
+  deposit_a_dkk: 1.00
+  deposit_b_dkk: 1.50
+  deposit_c_dkk: 3.00
+  dkk_per_eur: 7.4436
+  fiscal_year_start_month: 10
+  excluded_category_codes: ['98', '99']
+  excluded_store_formats: ['FRANCHISE', 'PARTNER', 'DEPOT']
+  history_start_week: '202101'
+
+models:
+  nfk_analytics:
+    +materialized: view
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: ephemeral
+    marts:
+      +schema: marts
+      +materialized: table
+
+seeds:
+  nfk_analytics:
+    +schema: seeds
+    +quote_columns: false
+
+snapshots:
+  nfk_analytics:
+    +target_schema: snapshots

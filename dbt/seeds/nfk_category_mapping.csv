@@ -1,0 +1,9 @@
+category_code,category_name,category_group,is_fresh,shelf_life_days
+10,Mejeri,FERSK,1,12
+11,Frugt og groent,FERSK,1,5
+12,Koed og fisk,FERSK,1,6
+20,Drikkevarer,KOLONIAL,0,365
+30,Kolonial,KOLONIAL,0,540
+40,Non food,NONFOOD,0,0
+98,Svind,INTERN,0,0
+99,Internt forbrug,INTERN,0,0

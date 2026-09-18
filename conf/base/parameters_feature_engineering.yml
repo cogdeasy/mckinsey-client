@@ -1,0 +1,42 @@
+feature_engineering:
+  target_column: units
+
+  lags: [1, 2, 3, 4, 8, 13, 52]
+  rolling_windows: [4, 8, 13]
+  rolling_stats: ["mean", "std"]
+
+  # Nordfalk promo mechanics. AVIS is the printed weekly leaflet, TILBUD a
+  # shelf price cut, 3F2 a multibuy, MP a loyalty ("Nordfalk Plus") price,
+  # KUPON an app coupon. Anything else is treated as non promotional.
+  promo_mechanics:
+    AVIS: leaflet
+    TILBUD: price_cut
+    "3F2": multibuy
+    MP: loyalty
+    KUPON: coupon
+  promo_lead_weeks: 1
+  promo_lag_weeks: 1
+
+  # Danish public holidays that materially move grocery demand. Dates are
+  # listed in helligdage_dk.csv; these are the ones we build features for.
+  holiday_features:
+    - paaske
+    - store_bededag
+    - kristi_himmelfart
+    - pinse
+    - grundlovsdag
+    - jul
+    - nytaar
+  # The three weeks before Christmas behave differently from everything else.
+  christmas_build_up_weeks: [49, 50, 51]
+  # Week 29-31 is the Danish industrial holiday, demand shifts to the coast.
+  summer_holiday_weeks: [29, 30, 31]
+
+  price:
+    base_price_window_weeks: 8
+    discount_depth_buckets: [0.0, 0.05, 0.1, 0.2, 0.35, 1.0]
+    log_transform: true
+
+  categorical_encoding: target_mean
+  target_encoding_smoothing: 20
+  drop_first_n_weeks: 52

@@ -1,0 +1,289 @@
+# Meridian data catalogue - Nordfalk deployment
+#
+# Layer convention follows the standard asset layout. Raw extracts land from the
+# client SFTP drop (\\nfk-sftp\analytics\out) and keep the client's own file
+# naming: NF_<DOMAIN>_<YYYY>[_UGE<WW>].csv. The nightly dbt export writes the
+# marts under 01_raw/marts as CSV because the engagement laptops cannot reach
+# the warehouse directly.
+#
+# 2022-11-04 (SB): weekly sales are split by calendar year in the drop, so they
+# are two entries rather than a partitioned dataset. Client will not change the
+# export. Left as is.
+
+sales_weekly_2022:
+  type: meridian.io.nordfalk_csv_dataset.NordfalkCSVDataSet
+  filepath: ${raw_root}/NF_SALG_UGE_2022.csv
+  layer: raw
+  load_args:
+    sep: ";"
+    encoding: latin-1
+    decimal: ","
+    dayfirst: true
+
+sales_weekly_2023:
+  type: meridian.io.nordfalk_csv_dataset.NordfalkCSVDataSet
+  filepath: ${raw_root}/NF_SALG_UGE_2023.csv
+  layer: raw
+  load_args:
+    sep: ";"
+    encoding: latin-1
+    decimal: ","
+    dayfirst: true
+
+store_master:
+  type: meridian.io.nordfalk_csv_dataset.NordfalkCSVDataSet
+  filepath: ${raw_root}/NF_BUTIK_STAMDATA.csv
+  layer: raw
+  load_args:
+    sep: ";"
+    encoding: latin-1
+    dtype:
+      butik_id: str
+      postnr: str
+
+product_hierarchy:
+  type: meridian.io.nordfalk_csv_dataset.NordfalkCSVDataSet
+  filepath: ${raw_root}/NF_VARE_HIERARKI.csv
+  layer: raw
+  load_args:
+    sep: ";"
+    encoding: latin-1
+    dtype:
+      vare_nr: str
+      kategori_kode: str
+
+promo_calendar:
+  type: meridian.io.nordfalk_csv_dataset.NordfalkCSVDataSet
+  filepath: ${raw_root}/NF_KAMPAGNE_KALENDER.csv
+  layer: raw
+  load_args:
+    sep: ";"
+    encoding: latin-1
+    dayfirst: true
+
+price_history:
+  type: meridian.io.nordfalk_csv_dataset.NordfalkCSVDataSet
+  filepath: ${raw_root}/NF_PRIS_HISTORIK.csv
+  layer: raw
+  load_args:
+    sep: ";"
+    encoding: latin-1
+    decimal: ","
+    dayfirst: true
+
+stock_positions:
+  type: meridian.io.nordfalk_csv_dataset.NordfalkCSVDataSet
+  filepath: ${raw_root}/NF_LAGER_BEHOLDNING.csv
+  layer: raw
+  load_args:
+    sep: ";"
+    encoding: latin-1
+    decimal: ","
+
+fiscal_calendar_raw:
+  type: meridian.io.fiscal_calendar_dataset.FiscalCalendarDataSet
+  filepath: ${raw_root}/NF_FINANSKALENDER.csv
+  layer: raw
+
+dk_holidays:
+  type: pandas.CSVDataSet
+  filepath: ${raw_root}/helligdage_dk.csv
+  layer: raw
+  load_args:
+    sep: ";"
+
+# --- dbt marts (nightly export, see dbt/scripts/export_marts.sh) ------------
+
+mart_sales_weekly:
+  type: pandas.CSVDataSet
+  filepath: ${mart_root}/mart_sales_weekly.csv
+  layer: raw
+  load_args:
+    sep: ";"
+    parse_dates: ["uge_start_dato"]
+
+mart_store_week_traffic:
+  type: pandas.CSVDataSet
+  filepath: ${mart_root}/mart_store_week_traffic.csv
+  layer: raw
+  load_args:
+    sep: ";"
+
+mart_promo_performance:
+  type: pandas.CSVDataSet
+  filepath: ${mart_root}/mart_promo_performance.csv
+  layer: raw
+  load_args:
+    sep: ";"
+
+# --- intermediate -----------------------------------------------------------
+
+sales_stacked:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/sales_stacked.pq
+  layer: intermediate
+
+sales_cleaned:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/sales_cleaned.pq
+  layer: intermediate
+
+stores_cleaned:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/stores_cleaned.pq
+  layer: intermediate
+
+products_cleaned:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/products_cleaned.pq
+  layer: intermediate
+
+promo_flags:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/promo_flags.pq
+  layer: intermediate
+
+fiscal_calendar:
+  type: pandas.ParquetDataSet
+  filepath: data/02_intermediate/fiscal_calendar.pq
+  layer: intermediate
+
+# --- primary ----------------------------------------------------------------
+
+demand_primary:
+  type: pandas.ParquetDataSet
+  filepath: data/03_primary/demand_primary.pq
+  layer: primary
+  save_args:
+    compression: snappy
+
+demand_primary_csv:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/demand_primary.csv
+  layer: primary
+  save_args:
+    index: false
+    sep: ";"
+    decimal: ","
+
+# --- feature ----------------------------------------------------------------
+
+demand_features:
+  type: pandas.ParquetDataSet
+  filepath: data/04_feature/demand_features.pq
+  layer: feature
+
+price_elasticity_features:
+  type: pandas.ParquetDataSet
+  filepath: data/04_feature/price_elasticity_features.pq
+  layer: feature
+
+# --- model input ------------------------------------------------------------
+
+train_set:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/train_set.pq
+  layer: model_input
+
+test_set:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/test_set.pq
+  layer: model_input
+
+feature_spec:
+  type: yaml.YAMLDataSet
+  filepath: data/05_model_input/feature_spec.yml
+  layer: model_input
+
+# --- models -----------------------------------------------------------------
+
+demand_model:
+  type: pickle.PickleDataSet
+  filepath: data/06_models/demand_model.pkl
+  layer: models
+  backend: joblib
+  versioned: true
+
+elasticity_model:
+  type: pickle.PickleDataSet
+  filepath: data/06_models/elasticity_model.pkl
+  layer: models
+  backend: pickle
+
+# --- model output -----------------------------------------------------------
+
+test_predictions:
+  type: pandas.ParquetDataSet
+  filepath: data/07_model_output/test_predictions.pq
+  layer: model_output
+
+elasticity_coefficients:
+  type: pandas.CSVDataSet
+  filepath: data/07_model_output/elasticity_coefficients.csv
+  layer: model_output
+  save_args:
+    index: false
+
+# --- reporting --------------------------------------------------------------
+
+accuracy_by_region:
+  type: pandas.CSVDataSet
+  filepath: data/08_reporting/accuracy_by_region.csv
+  layer: reporting
+  save_args:
+    index: false
+
+accuracy_by_category:
+  type: pandas.CSVDataSet
+  filepath: data/08_reporting/accuracy_by_category.csv
+  layer: reporting
+  save_args:
+    index: false
+
+backtest_summary:
+  type: pandas.CSVDataSet
+  filepath: data/08_reporting/backtest_summary.csv
+  layer: reporting
+  save_args:
+    index: false
+
+data_quality_report:
+  type: pandas.CSVDataSet
+  filepath: data/08_reporting/data_quality_report.csv
+  layer: reporting
+  save_args:
+    index: false
+
+feature_importance:
+  type: pandas.CSVDataSet
+  filepath: data/08_reporting/feature_importance.csv
+  layer: reporting
+  save_args:
+    index: false
+
+# Feature engineering steps in between. Persisted since sprint 9: the client
+# asked to see the lag block on its own after the promo double count in FY23
+# P4 (RSK-22).
+demand_panel:
+  type: pandas.ParquetDataSet
+  filepath: data/04_feature/demand_panel.pq
+  layer: feature
+
+demand_with_lags:
+  type: pandas.ParquetDataSet
+  filepath: data/04_feature/demand_with_lags.pq
+  layer: feature
+
+demand_with_promo:
+  type: pandas.ParquetDataSet
+  filepath: data/04_feature/demand_with_promo.pq
+  layer: feature
+
+demand_with_calendar:
+  type: MemoryDataSet
+
+demand_with_price:
+  type: MemoryDataSet
+
+demand_encoded:
+  type: MemoryDataSet

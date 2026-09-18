@@ -1,0 +1,21 @@
+[tool.kedro]
+package_name = "meridian"
+project_name = "Meridian - Nordfalk demand forecasting"
+project_version = "0.17.5"
+
+[tool.isort]
+line_length = 100
+known_first_party = ["meridian"]
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+exclude = '''
+/(
+    \.git
+  | notebooks
+  | dbt/target
+)/
+'''
