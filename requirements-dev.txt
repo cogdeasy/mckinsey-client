@@ -1,0 +1,12 @@
+-r src/requirements.txt
+
+pytest==6.2.4
+pytest-cov==2.12.1
+pytest-mock==3.6.1
+flake8==3.9.2
+black==20.8b1
+isort==5.8.0
+mypy==0.812
+jupyter==1.0.0
+notebook==6.3.0
+nbstripout==0.3.9

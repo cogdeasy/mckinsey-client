@@ -1,0 +1,33 @@
+# Local overrides used when running the asset off the sample extract that
+# ships with the repo (data/01_raw). Keeps the run under a minute on a laptop.
+
+scope:
+  min_weeks_of_history: 8
+
+feature_engineering:
+  drop_first_n_weeks: 8
+  lags: [1, 2, 3, 4]
+  rolling_windows: [4]
+
+model_training:
+  test_horizon_weeks: 4
+  validation_horizon_weeks: 4
+  estimator_params:
+    n_estimators: 80
+    learning_rate: 0.08
+    max_depth: 3
+    min_samples_leaf: 10
+    subsample: 1.0
+    loss: ls
+    random_state: 20211129
+  elasticity:
+    min_observations: 30
+
+model_evaluation:
+  backtest:
+    folds: 2
+    fold_horizon_weeks: 4
+    step_weeks: 4
+
+scoring:
+  horizon_weeks: 4

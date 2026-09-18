@@ -1,0 +1,25 @@
+model_evaluation:
+  metrics: ["wape", "mape", "bias", "rmse"]
+  # The client's own accuracy definition excludes weeks where actual units are
+  # below 5, otherwise the MAPE on slow movers dominates the pack (NFK-MT-092).
+  mape_min_actual_units: 5
+
+  segments:
+    - region_code
+    - category_code
+    - store_format
+    - promo_flag
+
+  backtest:
+    folds: 3
+    fold_horizon_weeks: 13
+    step_weeks: 13
+
+  acceptance_thresholds:
+    # Signed off in the wave-2 QBR. Fresh categories are allowed a wider band.
+    wape_overall: 0.28
+    wape_fresh: 0.35
+    bias_abs: 0.05
+
+  fresh_category_codes: ["10", "11", "12"]
+  report_top_n_features: 25

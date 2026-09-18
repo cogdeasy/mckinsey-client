@@ -1,0 +1,50 @@
+scoring:
+  horizon_weeks: 13
+  # The replenishment hand-off runs Thursday night for the fiscal week
+  # starting the following Monday.
+  anchor_week: null
+  round_to_case_pack: true
+  default_case_pack: 6
+
+  # Manual uplifts kept by the category managers. These were agreed line by
+  # line in the wave-2 workshops and are reviewed each quarter.
+  manual_uplifts:
+    - category_code: "10"
+      region_code: "11"
+      factor: 1.08
+      note: "Copenhagen fresh uplift, agreed with client on 12/03"
+    - category_code: "30"
+      region_code: "42"
+      factor: 0.94
+      note: "Aarhus ambient over-forecast, wave-1 carry over"
+    - category_code: "20"
+      region_code: null
+      factor: 1.02
+
+  scenarios:
+    baseline:
+      price_change_pct: 0.0
+      promo_intensity: 1.0
+    price_up_3:
+      price_change_pct: 0.03
+      promo_intensity: 1.0
+    promo_heavy:
+      price_change_pct: 0.0
+      promo_intensity: 1.25
+    inflation_squeeze:
+      price_change_pct: 0.07
+      promo_intensity: 0.85
+
+  export:
+    # Column order is fixed by interface note NFK-IF-014.
+    columns:
+      - BUTIK_ID
+      - VARE_NR
+      - UGE
+      - PROGNOSE_ANTAL
+      - PROGNOSE_VAERDI_DKK
+      - MODEL_VERSION
+    model_version: "meridian-2.4.1"
+    decimal_separator: ","
+    field_separator: ";"
+    date_format: "%d/%m/%Y"

@@ -1,0 +1,21 @@
+# Globals resolved by TemplatedConfigLoader (see src/meridian/run.py).
+# Values here are the Nordfalk wave-2 defaults. Local overrides go in
+# conf/local/globals.yml (not committed).
+
+client_code: NFK
+client_name: Nordfalk Dagligvarer A/S
+engagement_ref: NFK-2021-DEM
+
+raw_root: data/01_raw
+mart_root: data/01_raw/marts
+extract_vintage: "2023W39"
+
+reporting_currency: DKK
+group_currency: EUR
+
+# Nordfalk group FX rate, fixed for the engagement so that the weekly packs
+# reconcile with the client's own BI. Reviewed each quarter with Finance.
+dkk_per_eur: 7.4436
+
+forecast_horizon_weeks: 13
+history_start_fiscal_year: 2021

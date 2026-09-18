@@ -1,0 +1,37 @@
+model_training:
+  # Hold out the last 13 fiscal weeks of the extract. Do not shuffle: the
+  # client's validation pack is week-on-week.
+  test_horizon_weeks: 13
+  validation_horizon_weeks: 13
+
+  target_column: units
+  log_target: true
+
+  estimator: sklearn.ensemble.GradientBoostingRegressor
+  estimator_params:
+    n_estimators: 350
+    learning_rate: 0.05
+    max_depth: 5
+    min_samples_leaf: 40
+    subsample: 0.9
+    loss: ls
+    random_state: 20211129
+
+  sample_weighting:
+    # Recent weeks weigh more; promo weeks weigh more again because the
+    # replenishment team care most about promo peaks.
+    recency_half_life_weeks: 26
+    promo_week_multiplier: 1.4
+
+  elasticity:
+    method: ols_log_log
+    # Elasticity is fitted per category/region pair; below this many
+    # observations we fall back to the category level coefficient.
+    min_observations: 120
+    fallback_level: category_code
+    winsorise_discount_at: 0.6
+
+  feature_blocklist:
+    - source_key
+    - sku_description
+    - opened_on

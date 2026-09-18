@@ -1,0 +1,41 @@
+# Scoring catalogue. Split out from catalog.yml in sprint 11 because the
+# weekly scoring run is scheduled separately from the training run on the
+# client's Control-M instance (job NFK_MERIDIAN_SCORE_W).
+
+scoring_frame:
+  type: pandas.ParquetDataSet
+  filepath: data/05_model_input/scoring_frame.pq
+  layer: model_input
+
+forecast_raw:
+  type: pandas.ParquetDataSet
+  filepath: data/07_model_output/forecast_raw.pq
+  layer: model_output
+
+forecast_adjusted:
+  type: pandas.ParquetDataSet
+  filepath: data/07_model_output/forecast_adjusted.pq
+  layer: model_output
+
+# Hand-off file for the client's replenishment team. The layout (fixed column
+# order, semicolon separated, DD/MM/YYYY dates, comma decimals) is specified in
+# the interface note NFK-IF-014 and must not change without their sign-off.
+forecast_export:
+  type: meridian.io.nordfalk_export_dataset.NordfalkExportDataSet
+  filepath: data/08_reporting/NF_PROGNOSE_UGE.csv
+  layer: reporting
+  interface_ref: NFK-IF-014
+
+scenario_results:
+  type: pandas.CSVDataSet
+  filepath: data/08_reporting/scenario_results.csv
+  layer: reporting
+  save_args:
+    index: false
+
+forecast_summary:
+  type: pandas.CSVDataSet
+  filepath: data/08_reporting/forecast_summary.csv
+  layer: reporting
+  save_args:
+    index: false

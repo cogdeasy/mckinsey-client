@@ -1,0 +1,37 @@
+# Shared parameters. Pipeline specific parameters live in parameters_<pipeline>.yml.
+
+client:
+  code: NFK
+  name: Nordfalk Dagligvarer A/S
+  country: DK
+  currency: DKK
+  # Group reporting is in EUR; the rate is frozen for the engagement.
+  fx_dkk_per_eur: 7.4436
+  # Standard Danish VAT. Nordfalk sells no zero-rated lines in the categories
+  # in scope, so a single rate is applied across the board.
+  vat_rate: 0.25
+  # Bottle/can deposit is included in the gross line value in the extract and
+  # has to come out before any elasticity work. Rates per container type.
+  deposit_dkk:
+    A: 1.0
+    B: 1.5
+    C: 3.0
+
+calendar:
+  # Nordfalk run a 4-4-5 fiscal calendar starting the first Monday of October.
+  fiscal_year_start_month: 10
+  fiscal_week_pattern: [4, 4, 5]
+  week_start_day: 1
+  date_format: "%d/%m/%Y"
+  week_label_format: "{year}{week:02d}"
+
+scope:
+  # Category 99 is internal consumption and waste write-offs, never demand.
+  excluded_category_codes: ["99", "98"]
+  # 7-Eleven style franchise stores report through a different system and are
+  # excluded from the forecast (agreed with client on 12/03).
+  excluded_store_formats: ["FRANCHISE", "PARTNER"]
+  min_weeks_of_history: 26
+  min_units_per_week: 1
+
+random_seed: 20211129

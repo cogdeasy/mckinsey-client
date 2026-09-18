@@ -1,0 +1,20 @@
+vare_nr;vare_tekst;kategori_kode;underkategori;leverandoer_nr;pant_type;enhed;kolli
+10023;Mini maelk 0,5% 1 L;10;1004;L0231;;STK;12
+10047;Skummetmaelk 1 L;10;1004;L0231;;STK;12
+10112;Yoghurt naturel 1 kg;10;1012;L0231;;STK;6
+10310;Smoer 200 g;10;1031;L0244;;STK;20
+11020;Bananer loese;11;1102;L0410;;KG;1
+11085;Agurk stk;11;1108;L0417;;STK;10
+11142;Danske aebler 1 kg;11;1114;L0410;;KG;6
+12004;Hakket oksekoed 8-12%;12;1200;L0519;;STK;8
+12066;Kyllingebryst 700 g;12;1206;L0522;;STK;6
+12190;Baconsnack 140 g;12;1219;L0519;;STK;12
+20015;Cola 1,5 L;20;2001;L0733;C;STK;6
+20041;Danskvand citrus 0,5 L;20;2004;L0733;A;STK;24
+20088;Pilsner 33 cl 6-pak;20;2008;L0741;B;PAK;4
+20131;Appelsinjuice 1 L;20;2013;L0736;C;STK;8
+30012;Hvedemel 2 kg;30;3001;L0812;;STK;10
+30077;Kaffe formalet 400 g;30;3007;L0820;;STK;12
+30154;Havregryn 1 kg;30;3015;L0812;;STK;10
+30209;Toiletpapir 8 rl;30;3020;L0844;;PAK;6
+99001;Internt forbrug kantine;99;9900;L9999;;STK;1

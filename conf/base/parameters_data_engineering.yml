@@ -1,0 +1,49 @@
+data_engineering:
+  # Column renames from the client extract to the asset's internal names.
+  # The extract headers are Danish and a couple of them collide with our own
+  # generic names, so the mapping is applied in one place only.
+  column_map:
+    butik_id: store_id
+    vare_nr: sku_id
+    dato: date
+    antal: units
+    omsaetning_dkk: gross_value_dkk
+    kampagne_kode: promo_code
+    type: store_format
+    key: source_key
+    pant_type: deposit_type
+    vare_tekst: sku_description
+    kategori_kode: category_code
+    underkategori: subcategory_code
+    leverandoer_nr: supplier_id
+    region_kode: region_code
+    aabningsdato: opened_on
+    kvm: sales_area_sqm
+    postnr: postcode
+
+  # Store ids in the extract are zero padded to four characters. Anything else
+  # is a test store or a depot and is dropped in cleansing.
+  store_id_pattern: "^[0-9]{4}$"
+  depot_id_prefix: "9"
+
+  # Region is the first two characters of the store id. Nordfalk reuse the old
+  # amt numbering, mapped in utils/nordfalk_codes.py.
+  region_from_store_id_chars: 2
+
+  outliers:
+    # Units above this are almost always pallet sales to institutional
+    # customers and are winsorised, not dropped.
+    units_upper_percentile: 0.999
+    negative_units_policy: zero
+    max_weekly_units: 5000
+
+  dedupe_keys: ["store_id", "sku_id", "week_label"]
+  drop_closed_stores: true
+  # Stores closed for refurbishment in the Odense cluster during FY22 W14-W21.
+  refurbishment_exclusions:
+    - store_id: "3104"
+      from_week: "202214"
+      to_week: "202221"
+    - store_id: "3117"
+      from_week: "202216"
+      to_week: "202221"
