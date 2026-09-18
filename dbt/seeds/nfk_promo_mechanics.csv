@@ -1,0 +1,6 @@
+promo_mechanic,mechanic_name,expected_uplift,is_leaflet_default,weight
+AVIS,Avisplacering,1.85,1,1.0
+TILBUD,Butikstilbud,1.35,0,0.7
+3F2,3 for 2,1.60,1,0.9
+MP,Mixpris,1.25,0,0.5
+KUPON,Kupon i app,1.15,0,0.3

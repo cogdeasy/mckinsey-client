@@ -1,0 +1,96 @@
+version: 2
+
+sources:
+  - name: nfk_raw
+    database: analytics
+    schema: nfk_raw
+    description: >
+      Landing tables loaded from the Nordfalk SFTP drop by the nightly
+      ingestion job (Control-M NFK_RAW_LOAD_D). Column names and types are
+      whatever the SAP export produced; nothing is cast on the way in.
+    loader: controlm
+    loaded_at_field: indlaest_tid
+    freshness:
+      warn_after: {count: 30, period: hour}
+      error_after: {count: 72, period: hour}
+
+    tables:
+      - name: salg_uge
+        description: Weekly sales at store x article grain, gross of VAT and deposit.
+        columns:
+          - name: butik_id
+            description: Four digit store number. First two digits are the region.
+            tests:
+              - not_null
+          - name: vare_nr
+            description: Five digit article number.
+            tests:
+              - not_null
+          - name: uge
+            description: Calendar week label, YYYYWW.
+            tests:
+              - not_null
+          - name: antal
+            description: Units sold. Negative on return lines.
+          - name: omsaetning_dkk
+            description: Line value in DKK including 25% VAT and container deposit.
+          - name: kampagne_kode
+            description: Promo mechanic, blank when the line was not on offer.
+          - name: type
+            description: Store format at the time of the sale (denormalised by SAP).
+          - name: key
+            description: Source key, NFK|butik|vare|uge. Quoted by the reconciliation team.
+
+      - name: butik_stamdata
+        description: Store master. Overwritten in full every Friday.
+        columns:
+          - name: butik_id
+            tests:
+              - not_null
+              - unique
+          - name: region_kode
+          - name: type
+            description: Store format. FRANCHISE and PARTNER are out of scope.
+          - name: status
+            description: AABEN or LUKKET.
+
+      - name: vare_hierarki
+        description: Article hierarchy. Overwritten in full every Friday.
+        columns:
+          - name: vare_nr
+            tests:
+              - not_null
+              - unique
+          - name: kategori_kode
+          - name: underkategori
+          - name: pant_type
+            description: Deposit class A, B or C. Blank for non deposit lines.
+
+      - name: kampagne_kalender
+        description: Planned promotions, one row per campaign x article.
+        columns:
+          - name: kampagne_id
+            tests:
+              - not_null
+          - name: butik_gruppe
+            description: ALLE, STORBY or JYLLAND.
+
+      - name: pris_historik
+        description: Price changes, effective dated, one row per change.
+
+      - name: lager_beholdning
+        description: Stock on hand, sampled every fourth week.
+
+      - name: finanskalender
+        description: Client maintained 4-4-5 fiscal calendar. Refreshed each September.
+        columns:
+          - name: uge_label
+            tests:
+              - not_null
+              - unique
+
+      - name: helligdage
+        description: Danish public holidays and half trading days.
+
+      - name: kunde_trafik
+        description: Till transaction counts per store per week, from the POS system.

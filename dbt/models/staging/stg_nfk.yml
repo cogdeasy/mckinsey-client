@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: stg_nfk__sales
+    description: "{{ doc('nfk_sales_grain') }}"
+    columns:
+      - name: store_id
+        description: Four digit store number, zero padded.
+        tests:
+          - not_null
+      - name: sku_id
+        description: Five digit article number, zero padded.
+        tests:
+          - not_null
+      - name: week_label
+        description: Calendar week label YYYYWW as delivered by SAP.
+        tests:
+          - not_null
+      - name: source_key
+        description: NFK|butik|vare|uge. Used by Finance for reconciliation.
+        tests:
+          - unique
+          - not_null
+      - name: region_code
+        tests:
+          - not_null
+      - name: promo_flag
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+  - name: stg_nfk__stores
+    description: Store master with the depot and test store flags applied.
+    columns:
+      - name: store_id
+        tests:
+          - unique
+          - not_null
+      - name: store_format
+        tests:
+          - accepted_values:
+              values: ['SUPER', 'NAER', 'CITY', 'DISCOUNT', 'FRANCHISE', 'PARTNER', 'DEPOT']
+      - name: store_status
+        tests:
+          - accepted_values:
+              values: ['AABEN', 'LUKKET']
+      - name: region_code
+        tests:
+          - not_null
+
+  - name: stg_nfk__articles
+    description: Article hierarchy with the deposit class.
+    columns:
+      - name: sku_id
+        tests:
+          - unique
+          - not_null
+      - name: category_code
+        description: First two digits of the four digit subcategory.
+        tests:
+          - not_null
+      - name: deposit_type
+        tests:
+          - accepted_values:
+              values: ['A', 'B', 'C']
+              config:
+                where: "deposit_type is not null"
+
+  - name: stg_nfk__promotions
+    description: Planned campaigns, one row per campaign x article.
+    columns:
+      - name: campaign_id
+        tests:
+          - not_null
+      - name: sku_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_nfk__articles')
+              field: sku_id
+      - name: promo_mechanic
+        tests:
+          - accepted_values:
+              values: ['AVIS', 'TILBUD', '3F2', 'MP', 'KUPON']
+
+  - name: stg_nfk__prices
+    description: Effective dated shelf prices at region level.
+    columns:
+      - name: sku_id
+        tests:
+          - not_null
+      - name: shelf_price_dkk
+        tests:
+          - not_null
+
+  - name: stg_nfk__stock
+    description: Stock on hand, sampled every fourth week.
+
+  - name: stg_nfk__fiscal_calendar
+    description: "{{ doc('nfk_fiscal_calendar') }}"
+    columns:
+      - name: week_label
+        tests:
+          - unique
+          - not_null
+      - name: fiscal_period
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+  - name: stg_nfk__holidays
+    description: Danish public holidays and half trading days.
+
+  - name: stg_nfk__traffic
+    description: Weekly till transaction counts per store.
+    columns:
+      - name: store_id
+        tests:
+          - not_null

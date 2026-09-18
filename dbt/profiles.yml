@@ -1,0 +1,28 @@
+# Engagement profile. Kept in the repo (without secrets) so that the nightly
+# job and the delivery team run the same targets. Passwords come from the
+# environment; see docs/onboarding/environment-setup.md.
+
+nfk_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: nfk-dwh-dev.internal
+      user: "{{ env_var('NFK_DWH_USER') }}"
+      password: "{{ env_var('NFK_DWH_PASSWORD') }}"
+      port: 5432
+      dbname: analytics
+      schema: "dbt_{{ env_var('USER', 'dev') }}"
+      threads: 4
+      keepalives_idle: 0
+
+    prod:
+      type: postgres
+      host: nfk-dwh-prod.internal
+      user: "{{ env_var('NFK_DWH_USER') }}"
+      password: "{{ env_var('NFK_DWH_PASSWORD') }}"
+      port: 5432
+      dbname: analytics
+      schema: nfk_analytics
+      threads: 8
+      keepalives_idle: 0
