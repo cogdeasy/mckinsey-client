@@ -130,8 +130,13 @@ def clean_product_hierarchy(product_hierarchy, params, scope):
 
     products["category_name"] = products["category_code"].map(codes.category_name)
     products["is_fresh"] = products["category_code"].map(codes.is_fresh)
-    products["deposit_type"] = products.get("pant_type", "").fillna("").astype(str).str.upper()
-    products["case_pack"] = pd.to_numeric(products.get("kolli"), errors="coerce").fillna(1)
+    blank = pd.Series("", index=products.index)
+    products["deposit_type"] = (
+        products.get("deposit_type", blank).fillna("").astype(str).str.upper()
+    )
+    products["case_pack"] = pd.to_numeric(
+        products.get("kolli", pd.Series(1, index=products.index)), errors="coerce"
+    ).fillna(1)
 
     excluded = scope.get("excluded_category_codes", [])
     products = products[~products["category_code"].isin(excluded)]

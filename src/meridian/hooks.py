@@ -16,7 +16,6 @@ import os
 from kedro.config import TemplatedConfigLoader
 from kedro.framework.hooks import hook_impl
 from kedro.io import DataCatalog
-from kedro.versioning import Journal
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +108,7 @@ class DataQualityHooks:
     MIN_SALES_ROWS = 5000
 
     @hook_impl
-    def after_dataset_loaded(self, dataset_name, data, node):
+    def after_dataset_loaded(self, dataset_name, data):
         if not dataset_name.startswith("sales_weekly"):
             return
         rows = len(data)

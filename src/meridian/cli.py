@@ -9,11 +9,11 @@ from kedro.framework.session import KedroSession
 
 
 @click.group(name="meridian")
-def commands():
+def cli():
     """Meridian commands."""
 
 
-@commands.command(name="nfk-export")
+@cli.command(name="nfk-export")
 @click.option("--env", "-e", default="local", help="Kedro environment.")
 @click.option("--week", default=None, help="Fiscal week label, e.g. 202339.")
 def nfk_export(env, week):
@@ -23,7 +23,7 @@ def nfk_export(env, week):
         session.run(pipeline_name="scoring", node_names=["export_forecast_node"])
 
 
-@commands.command(name="nfk-vintage")
+@cli.command(name="nfk-vintage")
 @click.option("--env", "-e", default="local")
 def nfk_vintage(env):
     """Print the extract vintage the catalogue is pointing at."""

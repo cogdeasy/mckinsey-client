@@ -15,6 +15,7 @@ takes a sprint. Do not "tidy" it.
 """
 import logging
 import os
+from pathlib import PurePosixPath
 
 from kedro.io.core import AbstractDataSet, DataSetError, get_filepath_str, get_protocol_and_path
 
@@ -37,7 +38,7 @@ class NordfalkExportDataSet(AbstractDataSet):
     def __init__(self, filepath, interface_ref="NFK-IF-014", columns=None, write_trailer=True):
         protocol, path = get_protocol_and_path(filepath)
         self._protocol = protocol
-        self._filepath = path
+        self._filepath = PurePosixPath(path)
         self._interface_ref = interface_ref
         self._columns = list(columns) if columns else list(INTERFACE_COLUMNS)
         self._write_trailer = write_trailer

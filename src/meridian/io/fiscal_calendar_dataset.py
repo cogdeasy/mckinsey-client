@@ -6,6 +6,7 @@ exported from a different tool) and because it is validated on load: a
 missing or duplicated week silently shifts every lag feature in the asset.
 """
 import logging
+from pathlib import PurePosixPath
 
 import pandas as pd
 from kedro.io.core import AbstractDataSet, DataSetError, get_filepath_str, get_protocol_and_path
@@ -29,7 +30,7 @@ class FiscalCalendarDataSet(AbstractDataSet):
     def __init__(self, filepath, sep=";", strict=True):
         protocol, path = get_protocol_and_path(filepath)
         self._protocol = protocol
-        self._filepath = path
+        self._filepath = PurePosixPath(path)
         self._sep = sep
         self._strict = strict
 

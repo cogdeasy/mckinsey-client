@@ -99,17 +99,22 @@ mart_sales_weekly:
   filepath: ${mart_root}/mart_sales_weekly.csv
   layer: raw
   load_args:
+    sep: ";"
     parse_dates: ["uge_start_dato"]
 
 mart_store_week_traffic:
   type: pandas.CSVDataSet
   filepath: ${mart_root}/mart_store_week_traffic.csv
   layer: raw
+  load_args:
+    sep: ";"
 
 mart_promo_performance:
   type: pandas.CSVDataSet
   filepath: ${mart_root}/mart_promo_performance.csv
   layer: raw
+  load_args:
+    sep: ";"
 
 # --- intermediate -----------------------------------------------------------
 
@@ -150,7 +155,7 @@ demand_primary:
   filepath: data/03_primary/demand_primary.pq
   layer: primary
   save_args:
-    engine: pyarrow
+    compression: snappy
 
 demand_primary_csv:
   type: pandas.CSVDataSet

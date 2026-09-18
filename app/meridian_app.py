@@ -47,7 +47,9 @@ def main():
     summary = loaders.load_forecast_summary()
     if summary is not None and len(summary):
         st.sidebar.markdown("**Seneste koersel**")
-        st.sidebar.write("Uger: %s - %s" % (summary["week_label"].min(), summary["week_label"].max()))
+        st.sidebar.write(
+            "Uger: %s - %s" % (summary["week_label"].min(), summary["week_label"].max())
+        )
         st.sidebar.write("Prognose: %s" % dkk(summary["forecast_value_dkk"].sum()))
     else:
         st.sidebar.info("Ingen prognose fundet. Koer kedro run --pipeline scoring.")

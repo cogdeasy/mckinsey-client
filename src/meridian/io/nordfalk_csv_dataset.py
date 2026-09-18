@@ -13,6 +13,7 @@ Its quirks, all of which this dataset absorbs:
   * headers occasionally arrive upper case after a system patch.
 """
 import logging
+from pathlib import PurePosixPath
 
 import pandas as pd
 from kedro.io.core import AbstractDataSet, DataSetError, get_filepath_str, get_protocol_and_path
@@ -43,7 +44,7 @@ class NordfalkCSVDataSet(AbstractDataSet):
     def __init__(self, filepath, load_args=None, save_args=None, lowercase_headers=True):
         protocol, path = get_protocol_and_path(filepath)
         self._protocol = protocol
-        self._filepath = path
+        self._filepath = PurePosixPath(path)
         self._lowercase_headers = lowercase_headers
 
         self._load_args = dict(DEFAULT_LOAD_ARGS)

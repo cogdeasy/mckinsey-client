@@ -46,7 +46,9 @@ def _filters(history):
     region = left.selectbox(
         "Region",
         ["Alle"] + regions,
-        format_func=lambda code: code if code == "Alle" else "%s %s" % (code, REGION_NAMES.get(code, "")),
+        format_func=lambda code: (
+            code if code == "Alle" else "%s %s" % (code, REGION_NAMES.get(code, ""))
+        ),
     )
     categories = middle.multiselect(
         "Kategori",

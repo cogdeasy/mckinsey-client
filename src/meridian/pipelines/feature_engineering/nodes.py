@@ -102,12 +102,12 @@ def add_promo_features(frame, params):
     out["discount_depth_lag_1"] = (
         out.groupby(PANEL_KEYS)["discount_depth"].shift(1).fillna(0.0)
     )
-    out["promo_streak"] = (
-        out.groupby(PANEL_KEYS)["promo_flag"]
-        .apply(lambda series: series.groupby((series != series.shift()).cumsum()).cumcount() + 1)
-        .reset_index(level=[0, 1], drop=True)
-        * out["promo_flag"]
+    block = out.groupby(PANEL_KEYS)["promo_flag"].transform(
+        lambda series: (series != series.shift()).cumsum()
     )
+    out["promo_streak"] = (
+        out.groupby(PANEL_KEYS + [block.rename("promo_block")], sort=False).cumcount() + 1
+    ) * out["promo_flag"]
     return out
 
 
