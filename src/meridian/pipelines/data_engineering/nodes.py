@@ -362,6 +362,7 @@ def build_data_quality_report(
         .str.strip()
         .str.zfill(4)
     )
+    known_stores = known_stores[known_stores.map(codes.is_valid_store_id)]
     unmapped = (
         (~dropped["store_id"].isin(known_stores))
         .groupby(dropped["week_label"])
