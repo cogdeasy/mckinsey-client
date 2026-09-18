@@ -88,6 +88,7 @@ def create_data_quality_pipeline(**kwargs):
             node(
                 func=nodes.build_data_quality_report,
                 inputs=[
+                    "sales_stacked",
                     "sales_cleaned",
                     "stores_cleaned",
                     "products_cleaned",

@@ -335,7 +335,9 @@ def mirror_primary_to_csv(demand_primary):
     return demand_primary
 
 
-def build_data_quality_report(sales_cleaned, stores_cleaned, products_cleaned, demand_primary):
+def build_data_quality_report(
+    sales_stacked, sales_cleaned, stores_cleaned, products_cleaned, demand_primary
+):
     parts = [
         validation.summarise(sales_cleaned, "sales_cleaned"),
         validation.summarise(stores_cleaned, "stores_cleaned"),
@@ -346,16 +348,24 @@ def build_data_quality_report(sales_cleaned, stores_cleaned, products_cleaned, d
     for part in parts:
         report = report.append(part, ignore_index=True)
 
-    negative_lines = int((sales_cleaned["units"] < 0).sum())
-    unmapped = int(demand_primary["region_code"].map(codes.region_name).eq("Ukendt").sum())
+    # The sign-off thresholds are per week, so the headline carries the worst
+    # week in the drop. Both checks run on the stacked extract: cleansing drops
+    # unmapped stores and zeroes returns.
+    dropped = sales_stacked.copy()
+    dropped["units"] = pd.to_numeric(dropped["units"], errors="coerce").fillna(0)
+    by_week = dropped.groupby("week_label")
+    negative_share = by_week["units"].apply(lambda units: float((units < 0).mean()))
+    unmapped = (
+        (~dropped["store_id"].isin(stores_cleaned["store_id"]))
+        .groupby(dropped["week_label"])
+        .sum()
+    )
     headline = {
         "primary_rows": len(demand_primary),
         "stores": demand_primary["store_id"].nunique(),
         "articles": demand_primary["sku_id"].nunique(),
-        "negative_unit_share": (
-            float(negative_lines) / len(sales_cleaned) if len(sales_cleaned) else 0.0
-        ),
-        "unmapped_store_lines": unmapped,
+        "negative_unit_share": float(negative_share.max()) if len(negative_share) else 0.0,
+        "unmapped_store_lines": int(unmapped.max()) if len(unmapped) else 0,
     }
     for name, value in headline.items():
         report = report.append(
