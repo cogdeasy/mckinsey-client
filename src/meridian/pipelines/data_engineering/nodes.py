@@ -346,6 +346,31 @@ def build_data_quality_report(sales_cleaned, stores_cleaned, products_cleaned, d
     for part in parts:
         report = report.append(part, ignore_index=True)
 
+    negative_lines = int((sales_cleaned["units"] < 0).sum())
+    unmapped = int(demand_primary["region_code"].map(codes.region_name).eq("Ukendt").sum())
+    headline = {
+        "primary_rows": len(demand_primary),
+        "stores": demand_primary["store_id"].nunique(),
+        "articles": demand_primary["sku_id"].nunique(),
+        "negative_unit_share": (
+            float(negative_lines) / len(sales_cleaned) if len(sales_cleaned) else 0.0
+        ),
+        "unmapped_store_lines": unmapped,
+    }
+    for name, value in headline.items():
+        report = report.append(
+            {
+                "dataset": "summary",
+                "column": name,
+                "dtype": "check",
+                "rows": value,
+                "nulls": 0,
+                "null_pct": 0.0,
+                "distinct": 0,
+            },
+            ignore_index=True,
+        )
+
     coverage = (
         demand_primary.groupby(["region_code", "week_label"])["units"]
         .count()

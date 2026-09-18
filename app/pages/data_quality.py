@@ -24,7 +24,8 @@ def render():
         loaders.missing_notice("data_quality_report")
         return
 
-    checks = report.set_index("check")["value"].to_dict() if "check" in report.columns else {}
+    summary = report[report["dataset"] == "summary"] if "dataset" in report.columns else report
+    checks = dict(zip(summary["column"], summary["rows"])) if len(summary) else {}
 
     left, middle, right = st.beta_columns(3)
     left.markdown("**Raekker i primary**")
