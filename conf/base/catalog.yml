@@ -255,3 +255,30 @@ feature_importance:
   layer: reporting
   save_args:
     index: false
+
+# Feature engineering steps in between. Persisted since sprint 9: the client
+# asked to see the lag block on its own after the promo double count in FY23
+# P4 (RSK-22).
+demand_panel:
+  type: pandas.ParquetDataSet
+  filepath: data/04_feature/demand_panel.pq
+  layer: feature
+
+demand_with_lags:
+  type: pandas.ParquetDataSet
+  filepath: data/04_feature/demand_with_lags.pq
+  layer: feature
+
+demand_with_promo:
+  type: pandas.ParquetDataSet
+  filepath: data/04_feature/demand_with_promo.pq
+  layer: feature
+
+demand_with_calendar:
+  type: MemoryDataSet
+
+demand_with_price:
+  type: MemoryDataSet
+
+demand_encoded:
+  type: MemoryDataSet
