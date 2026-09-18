@@ -31,10 +31,12 @@ select
     store_week.store_size_band,
     store_week.sales_area_sqm,
     store_week.transactions,
-    store_week.avg_basket_dkk,
-    store_week.till_value_dkk,
     sales.net_value_dkk,
     sales.units,
+    case
+        when store_week.transactions > 0
+            then sales.net_value_dkk / store_week.transactions
+    end as avg_basket_dkk,
     case
         when store_week.sales_area_sqm > 0
             then sales.net_value_dkk / store_week.sales_area_sqm

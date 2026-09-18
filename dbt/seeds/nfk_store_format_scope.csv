@@ -1,8 +1,7 @@
 store_format,format_name,in_scope,notes
+HYPER,Nordfalk Hyper,1,Core estate
 SUPER,Nordfalk Super,1,Core estate
 NAER,Nordfalk Naer,1,Core estate
-CITY,Nordfalk City,1,Added to scope sprint 4
-DISCOUNT,Nordfalk Discount,1,Core estate
 FRANCHISE,Franchisebutik,0,No article level data delivered
 PARTNER,Partnerbutik,0,Shared till system
 DEPOT,Distributionscenter,0,Not a selling location

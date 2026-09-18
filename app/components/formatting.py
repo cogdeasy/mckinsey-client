@@ -4,26 +4,24 @@ CLIENT_NAME = "Nordfalk Dagligvarer A/S"
 CLIENT_CODE = "NFK"
 FX_DKK_PER_EUR = 7.4436
 
+# Kept in step with src/meridian/utils/nordfalk_codes.py by hand. The app is
+# deployed on its own and cannot import the package.
 REGION_NAMES = {
-    "10": "Hovedstaden",
-    "11": "Nordsjaelland",
-    "20": "Sjaelland Syd",
-    "30": "Fyn",
-    "40": "Sydjylland",
-    "50": "Midtjylland",
-    "60": "Nordjylland",
-    "90": "Depot",
+    "11": "Hovedstaden",
+    "31": "Fyn",
+    "42": "Midtjylland",
+    "55": "Syddanmark",
+    "62": "Nordjylland",
+    "70": "Sjaelland Vest",
 }
 
 CATEGORY_NAMES = {
-    "10": "Frugt og groent",
+    "10": "Mejeri",
+    "11": "Frugt og groent",
+    "12": "Koed og fisk",
     "20": "Drikkevarer",
-    "30": "Mejeri",
-    "40": "Brod og bageri",
-    "50": "Kod og fjerkrae",
-    "60": "Kolonial",
-    "70": "Frost",
-    "80": "Non food",
+    "30": "Kolonial",
+    "40": "Non food",
 }
 
 

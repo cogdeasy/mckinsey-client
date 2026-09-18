@@ -15,10 +15,11 @@ with source as (
 )
 
 select
-    trim(uge_label)                             as week_label,
-    {{ nfk_parse_date('uge_start') }}           as week_start_date,
-    cast(regnskabsaar as integer)               as fiscal_year,
-    cast(regnskabsperiode as integer)           as fiscal_period,
-    cast(regnskabsuge as integer)               as fiscal_week,
-    cast(periode_uge as integer)                as week_in_period
+    trim(cast(uge_label as varchar))            as week_label,
+    {{ nfk_parse_date('uge_start_dato') }}      as week_start_date,
+    {{ nfk_parse_date('uge_slut_dato') }}       as week_end_date,
+    cast(fin_aar as integer)                    as fiscal_year,
+    cast(periode as integer)                    as fiscal_period,
+    cast(fin_uge as integer)                    as fiscal_week,
+    cast(uge_i_periode as integer)              as week_in_period
 from source

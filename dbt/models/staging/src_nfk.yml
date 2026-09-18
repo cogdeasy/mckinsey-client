@@ -38,6 +38,8 @@ sources:
             description: Promo mechanic, blank when the line was not on offer.
           - name: type
             description: Store format at the time of the sale (denormalised by SAP).
+          - name: pant_type
+            description: Deposit class carried on the sales line as well as on the article.
           - name: key
             description: Source key, NFK|butik|vare|uge. Quoted by the reconciliation team.
 
@@ -48,9 +50,13 @@ sources:
             tests:
               - not_null
               - unique
+          - name: navn
           - name: region_kode
           - name: type
             description: Store format. FRANCHISE and PARTNER are out of scope.
+          - name: kvm
+            description: Selling area in square metres.
+          - name: postnr
           - name: status
             description: AABEN or LUKKET.
 
@@ -63,6 +69,9 @@ sources:
               - unique
           - name: kategori_kode
           - name: underkategori
+            description: Four digit subcategory, first two digits are the category.
+          - name: kolli
+            description: Case pack size used by replenishment.
           - name: pant_type
             description: Deposit class A, B or C. Blank for non deposit lines.
 
@@ -76,7 +85,9 @@ sources:
             description: ALLE, STORBY or JYLLAND.
 
       - name: pris_historik
-        description: Price changes, effective dated, one row per change.
+        description: >
+          Price changes per article and store, one row per change date. No end
+          date on the file: the next row closes the previous one.
 
       - name: lager_beholdning
         description: Stock on hand, sampled every fourth week.
@@ -93,4 +104,6 @@ sources:
         description: Danish public holidays and half trading days.
 
       - name: kunde_trafik
-        description: Till transaction counts per store per week, from the POS system.
+        description: >
+          Weekly basket counts per store from the POS system. The client call
+          the measure "kunder"; it counts baskets, not people.

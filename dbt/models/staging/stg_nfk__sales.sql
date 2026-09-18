@@ -22,13 +22,14 @@ typed as (
         {{ nfk_store_id('butik_id') }}                      as store_id,
         {{ nfk_sku_id('vare_nr') }}                         as sku_id,
         trim(cast(uge as varchar))                          as week_label,
+        {{ nfk_parse_date('dato') }}                        as week_start_date,
         cast(replace(cast(antal as varchar), ',', '.') as numeric)          as units,
         cast(replace(cast(omsaetning_dkk as varchar), ',', '.') as numeric) as gross_value_dkk,
         nullif(trim(kampagne_kode), '')                     as promo_code,
-        nullif(trim(type), '')                              as store_format,
+        nullif(upper(trim(type)), '')                       as store_format,
+        nullif(upper(trim(pant_type)), '')                  as deposit_type,
         trim(key)                                           as source_key,
-        {{ nfk_region_from_store_id('butik_id') }}          as region_code,
-        indlaest_tid                                        as loaded_at
+        {{ nfk_region_from_store_id('butik_id') }}          as region_code
     from source
     where uge is not null
 

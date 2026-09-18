@@ -39,7 +39,7 @@ models:
       - name: store_format
         tests:
           - accepted_values:
-              values: ['SUPER', 'NAER', 'CITY', 'DISCOUNT', 'FRANCHISE', 'PARTNER', 'DEPOT']
+              values: ['HYPER', 'SUPER', 'NAER', 'FRANCHISE', 'PARTNER', 'DEPOT']
       - name: store_status
         tests:
           - accepted_values:
@@ -90,6 +90,9 @@ models:
         tests:
           - not_null
       - name: shelf_price_dkk
+        tests:
+          - not_null
+      - name: normal_price_dkk
         tests:
           - not_null
 

@@ -5,6 +5,10 @@
     )
 }}
 
+-- Till transaction counts. The client call these "kunder"; they are baskets,
+-- not people, and the two numbers are used interchangeably in their own
+-- reporting.
+
 with source as (
 
     select * from {{ source('nfk_raw', 'kunde_trafik') }}
@@ -13,7 +17,6 @@ with source as (
 
 select
     {{ nfk_store_id('butik_id') }}              as store_id,
-    trim(cast(uge as varchar))                  as week_label,
-    cast(transaktioner as numeric)              as transactions,
-    cast(replace(gns_kurv_dkk, ',', '.') as numeric) as avg_basket_dkk
+    trim(cast(uge_label as varchar))            as week_label,
+    cast(kunder as numeric)                     as transactions
 from source

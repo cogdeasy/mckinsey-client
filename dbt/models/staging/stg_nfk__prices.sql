@@ -5,18 +5,30 @@
     )
 }}
 
--- Effective dated shelf prices. Prices are held per region, not per store.
+-- Effective dated shelf prices. One row per article, store and change date;
+-- there is no end date on the file, the next row closes the previous one.
 
 with source as (
 
     select * from {{ source('nfk_raw', 'pris_historik') }}
 
+),
+
+typed as (
+
+    select
+        {{ nfk_sku_id('vare_nr') }}                             as sku_id,
+        {{ nfk_store_id('butik_id') }}                          as store_id,
+        {{ nfk_parse_date('gyldig_fra') }}                      as valid_from,
+        cast(replace(cast(normalpris as varchar), ',', '.') as numeric) as normal_price_dkk,
+        cast(replace(cast(salgspris as varchar), ',', '.') as numeric)  as shelf_price_dkk
+    from source
+
 )
 
 select
-    {{ nfk_sku_id('vare_nr') }}             as sku_id,
-    lpad(trim(cast(region_kode as varchar)), 2, '0') as region_code,
-    {{ nfk_parse_date('gyldig_fra') }}      as valid_from,
-    {{ nfk_parse_date('gyldig_til') }}      as valid_to,
-    cast(replace(pris_dkk, ',', '.') as numeric) as shelf_price_dkk
-from source
+    typed.*,
+    lead(valid_from) over (
+        partition by sku_id, store_id order by valid_from
+    ) - interval '1 day' as valid_to
+from typed

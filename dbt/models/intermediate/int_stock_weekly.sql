@@ -19,7 +19,9 @@ select
     store_id,
     sku_id,
     week_label,
+    sample_date,
     stock_units,
+    case_pack,
     is_out_of_stock,
     max(is_out_of_stock) over (
         partition by store_id, sku_id

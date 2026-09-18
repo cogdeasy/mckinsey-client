@@ -5,9 +5,9 @@
     )
 }}
 
--- Campaigns exploded to one row per article x week. A campaign that starts
--- on a Thursday still belongs to the ISO week of its start date; the client
--- plans in leaflet weeks, not in days.
+-- Campaigns exploded to one row per article x week x store group. A campaign
+-- that starts on a Thursday still belongs to the ISO week of its start date;
+-- the client plans in leaflet weeks, not in days.
 
 with promotions as (
 
@@ -30,8 +30,8 @@ exploded as (
         promotions.promo_mechanic,
         promotions.store_group,
         promotions.is_leaflet,
-        promotions.promo_price_dkk,
-        promotions.normal_price_dkk,
+        promotions.leaflet_page,
+        promotions.discount_depth,
         calendar.week_label,
         calendar.week_start_date
     from promotions
@@ -45,17 +45,12 @@ select
     week_label,
     sku_id,
     store_group,
-    max(is_leaflet)                                                     as is_leaflet,
-    max(case when promo_mechanic = '3F2' then 1 else 0 end)             as is_multibuy,
-    max(case when promo_mechanic = 'KUPON' then 1 else 0 end)           as is_coupon,
-    min(promo_price_dkk)                                                as promo_price_dkk,
-    max(normal_price_dkk)                                               as normal_price_dkk,
-    case
-        when max(normal_price_dkk) > 0
-            then 1 - (min(promo_price_dkk) / max(normal_price_dkk))
-        else 0
-    end                                                                 as discount_depth,
-    count(distinct campaign_id)                                         as campaign_count,
-    string_agg(distinct promo_mechanic, '+')                            as promo_mechanics
+    max(is_leaflet)                                             as is_leaflet,
+    min(leaflet_page)                                           as leaflet_page,
+    max(case when promo_mechanic = '3F2' then 1 else 0 end)     as is_multibuy,
+    max(case when promo_mechanic = 'KUPON' then 1 else 0 end)   as is_coupon,
+    max(discount_depth)                                         as discount_depth,
+    count(distinct campaign_id)                                 as campaign_count,
+    string_agg(distinct promo_mechanic, '+')                    as promo_mechanics
 from exploded
 group by 1, 2, 3

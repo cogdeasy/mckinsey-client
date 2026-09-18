@@ -80,7 +80,8 @@ select
     sales.net_value_eur,
     case when sales.units > 0 then sales.net_value_dkk / sales.units end as realised_price_dkk,
     price.shelf_price_dkk,
-    coalesce(promo.discount_depth, 0)               as discount_depth,
+    price.normal_price_dkk,
+    coalesce(promo.discount_depth, price.price_discount_depth, 0) as discount_depth,
     coalesce(promo.is_leaflet, 0)                   as is_leaflet,
     coalesce(promo.is_multibuy, 0)                  as is_multibuy,
     coalesce(promo.is_coupon, 0)                    as is_coupon,
@@ -99,7 +100,7 @@ left join promo
 left join price
     on price.sku_id = sales.sku_id
     and price.week_label = sales.week_label
-    and price.region_code = sales.region_code
+    and price.store_id = sales.store_id
 left join stock
     on stock.store_id = sales.store_id
     and stock.sku_id = sales.sku_id

@@ -13,7 +13,7 @@ seeds:
       - name: region_group
         tests:
           - accepted_values:
-              values: ['STORBY', 'PROVINS', 'JYLLAND', 'DEPOT']
+              values: ['STORBY', 'OERNE', 'JYLLAND', 'DEPOT']
 
   - name: nfk_category_mapping
     description: Two digit category code to name and fresh flag.

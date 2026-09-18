@@ -5,7 +5,9 @@
     )
 }}
 
--- Effective dated prices flattened to a week grid at region level.
+-- Effective dated prices flattened onto the week grid. Prices are held per
+-- store even though the client sets them centrally per region; the store
+-- level rows are what the price file delivers.
 
 with prices as (
 
@@ -25,10 +27,11 @@ spread as (
     select
         calendar.week_label,
         prices.sku_id,
-        prices.region_code,
+        prices.store_id,
+        prices.normal_price_dkk,
         prices.shelf_price_dkk,
         row_number() over (
-            partition by calendar.week_label, prices.sku_id, prices.region_code
+            partition by calendar.week_label, prices.sku_id, prices.store_id
             order by prices.valid_from desc
         ) as price_rank
     from calendar
@@ -41,7 +44,12 @@ spread as (
 select
     week_label,
     sku_id,
-    region_code,
-    shelf_price_dkk
+    store_id,
+    normal_price_dkk,
+    shelf_price_dkk,
+    case
+        when normal_price_dkk > 0 then 1 - (shelf_price_dkk / normal_price_dkk)
+        else 0
+    end as price_discount_depth
 from spread
 where price_rank = 1

@@ -11,7 +11,7 @@ from components.formatting import category_label, pct, region_label, week_displa
 
 TARGET_WAPE_AMBIENT = 0.28
 TARGET_WAPE_FRESH = 0.35
-FRESH_CATEGORIES = ["10", "30", "40", "50"]
+FRESH_CATEGORIES = ["10", "11", "12"]
 
 
 def render():
